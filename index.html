@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Custom Setting from Salesforce</title>
+    <script>
+        // Salesforce org details
+        const salesforceConfig = {
+            instanceUrl: 'https://yourInstance.salesforce.com', // Replace with your Salesforce instance
+            accessToken: 'Bearer YOUR_ACCESS_TOKEN', // Replace with your OAuth access token
+            apiVersion: 'v57.0' // Update as per your Salesforce API version
+        };
+
+        // Function to fetch custom setting value
+        async function fetchCustomSetting() {
+            try {
+                // Define the custom setting endpoint (update with your custom setting API name)
+                const endpoint = `${salesforceConfig.instanceUrl}/services/data/${salesforceConfig.apiVersion}/sobjects/MyCustomSetting__c/`;
+
+                // Make an AJAX request to Salesforce
+                const response = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': salesforceConfig.accessToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error fetching custom setting: ${response.statusText}`);
+                }
+
+                // Parse the response JSON
+                const data = await response.json();
+
+                // Assuming the custom setting has a field `SettingValue__c`
+                const settingValue = data.records ? data.records[0].SettingValue__c : 'No value found';
+                
+                // Display the value on the web page
+                document.getElementById('customSettingValue').textContent = settingValue;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('customSettingValue').textContent = 'Error fetching data';
+            }
+        }
+
+        // Call the function when the page loads
+        document.addEventListener('DOMContentLoaded', fetchCustomSetting);
+    </script>
+</head>
+<body>
+    <h1>Custom Setting Value</h1>
+    <p id="customSettingValue">Loading...</p>
+</body>
+</html>
